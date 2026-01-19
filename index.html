@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RIMT Smart Attendance</title>
+<title>RIMT Smart Attendance - Complete Teacher Dashboard</title>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
@@ -79,6 +79,7 @@
         <button class="tab-btn" onclick="switchTab('live', this)">📊 Live View</button>
     </div>
 
+
     <div id="teacher-panel" class="panel active">
         <div class="form-group">
             <label>👤 Username</label>
@@ -92,14 +93,14 @@
         <div id="login-status"></div>
 
         <div id="teacher-content" style="display: none;">
-           
+            
             <div class="teacher-tabs">
                 <button class="teacher-tab-btn active" onclick="showTeacherSection('live', this)">📊 Live Session</button>
                 <button class="teacher-tab-btn" onclick="showTeacherSection('all', this)">📈 All Records</button>
                 <button class="teacher-tab-btn" onclick="showTeacherSection('export', this)">📥 Export Data</button>
             </div>
 
-   
+           
             <div id="teacher-live-section">
                 <div class="form-group">
                     <label>📚 Subject</label>
@@ -116,6 +117,7 @@
                     </div>
                 </div>
 
+              
                 <button id="end-session-btn" onclick="endSession()" class="end-session-btn" style="display:none;">
                     🛑 End Live Session
                 </button>
@@ -145,7 +147,7 @@
                 </div>
             </div>
 
-
+        
             <div id="teacher-all-section" style="display: none;">
                 <h3>📋 Complete Attendance Records</h3>
                 <div class="filter-row">
@@ -174,31 +176,32 @@
                 </div>
             </div>
 
-      
+        
             <div id="teacher-export-section" style="display: none;">
                 <h3>📥 Student Attendance Reports</h3>
                 <div class="filter-row">
                     <input type="date" id="export-date-from">
                     <input type="date" id="export-date-to">
-                    <button onclick="exportFilteredData()" class="copy-btn" style="background:#28a745;">📅 Date Range Report</button>
-                    <button onclick="exportSummaryReport()" class="copy-btn" style="background:#007bff;">📊 Complete Summary</button>
+                    <button onclick="exportFlatData()" class="copy-btn" style="background:#28a745;">📅 Date Range (Flat Table)</button>
+                    <button onclick="exportSummaryReport()" class="copy-btn" style="background:#007bff;">📊 Student-wise Summary</button>
                 </div>
                 <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-top:20px;">
-                    <strong>✅ Features:</strong> Student-wise summary | Attendance % | Avg distance | All sessions listed
+                    <strong>✅ Flat export:</strong> One row per record (good for pivot tables).<br>
+                    <strong>✅ Summary export:</strong> Student-wise summary | Attendance % | Avg distance | All sessions listed.
                 </div>
                 <p style="color:#666; margin-top:20px;">📱 Perfect for Excel/Google Sheets analysis ✓</p>
             </div>
         </div>
     </div>
 
-
+   
     <div id="student-panel" class="panel">
         <div class="form-group">
             <label>👤 Full Name</label>
             <input type="text" id="s-name" placeholder="Enter your full name">
         </div>
         <div class="form-group">
-            <label>🎫 Roll Number</label>
+            <label>🎓 Roll Number</label>
             <input type="text" id="s-roll" placeholder="e.g. 25BCA001">
         </div>
         <div class="form-group">
@@ -213,9 +216,10 @@
         <div id="attendance-status"></div>
     </div>
 
+  
     <div id="live-panel" class="panel">
         <div class="form-group">
-            <label>📚 Subject</label>
+            <label>📚 Subject (optional)</label>
             <input type="text" id="l-subject" placeholder="e.g. Mathematics">
         </div>
         <div class="form-group">
@@ -234,10 +238,11 @@
     </div>
 </div>
 
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-
+   
     const firebaseConfig = {
         apiKey: "AIzaSyCMpPODrwHBc-0e0sWFKUaggZNK8RGXL7w",
         authDomain: "rimt-smart-attendance-767ad.firebaseapp.com",
@@ -257,7 +262,7 @@
         return id;
     })();
 
-  
+    
     let cachedPosition = null;
 
     function getCachedLocation() {
@@ -284,7 +289,7 @@
     let teacherLoggedIn = false;
 
     function getDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371000; // Earth radius in meters
+        const R = 6371000; // meters
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -292,7 +297,6 @@
                   Math.sin(dLon/2) * Math.sin(dLon/2);
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
-
 
     async function checkDeviceAttendance(code) {
         const snapshot = await db.collection('attendance')
@@ -309,6 +313,7 @@
         document.getElementById(tab+'-panel').classList.add('active');
         button.classList.add('active');
     }
+
 
     function teacherLogin(){
         const user = document.getElementById('t-username').value.trim();
@@ -374,12 +379,13 @@
             loadTeacherLive();
             loadTeacherStats();
         } catch (error) {
+            console.error(error);
             alert("❌ Location required. Enable GPS and refresh.");
             return;
         }
     }
 
-   
+  
     async function endSession() {
         if(!currentSessionCode) return;
 
@@ -392,8 +398,9 @@
                 endedAt: Date.now()
             });
             alert("✅ Session ended successfully!");
-            document.getElementById('end-session-btn').disabled = true;
-            document.getElementById('end-session-btn').innerText = "🚫 Session Ended";
+            const btn = document.getElementById('end-session-btn');
+            btn.disabled = true;
+            btn.innerText = "🚫 Session Ended";
         } catch(e) {
             console.error('❌ End session error:', e);
             alert('Error ending session: ' + e.message);
@@ -401,12 +408,15 @@
     }
 
     function copyCode(){ 
+        if(!currentSessionCode){ alert('No session code generated yet'); return; }
         navigator.clipboard.writeText(currentSessionCode).then(()=>{
             alert('✅ Code copied to clipboard!');
+        }).catch(()=>{
+            alert('Could not copy, copy manually.');
         }); 
     }
 
-   
+
     async function markAttendance(){
         const name=document.getElementById('s-name').value.trim();
         const roll=document.getElementById('s-roll').value.trim();
@@ -422,6 +432,7 @@
         btn.disabled=true; btn.textContent='Checking...'; statusDiv.innerHTML='';
 
         try {
+            // one device one session
             const alreadyAttended = await checkDeviceAttendance(code);
             if (alreadyAttended) {
                 statusDiv.innerHTML='<div class="status warning">⚠️ Already marked attendance from this device!<br>🔒 One attendance per device per session</div>';
@@ -433,12 +444,14 @@
             const sessionSnap = await db.collection('sessions').doc(code).get();
             if(!sessionSnap.exists){
                 statusDiv.innerHTML='<div class="status error">❌ Invalid session code</div>';
+                btn.disabled=false; btn.textContent='✅ Mark My Attendance';
                 return;
             }
 
             const session = sessionSnap.data();
             if(!session.isActive){
                 statusDiv.innerHTML='<div class="status error">❌ Session closed by teacher</div>';
+                btn.disabled=false; btn.textContent='✅ Mark My Attendance';
                 return;
             }
 
@@ -469,33 +482,30 @@
             document.getElementById('s-code').value='';
             
         } catch (error) {
+            console.error(error);
             let msg = 'Location error';
             if (error.code === 1) msg = 'Permission denied';
             if (error.code === 2) msg = 'GPS unavailable';
             if (error.code === 3) msg = 'Location timeout';
 
             statusDiv.innerHTML = `<div class="status error">❌ ${msg}</div>`;
-            btn.disabled = false;
-            btn.textContent = '✅ Mark My Attendance';
-            return;
         }
         btn.disabled=false; btn.textContent='✅ Mark My Attendance';
     }
 
-    
+ 
     function loadLiveAttendance(){
-        const subject=document.getElementById('l-subject').value.trim();
+        const subject=document.getElementById('l-subject').value.trim(); // optional, only to display if needed
         const code=document.getElementById('l-code').value.trim();
         const tbody=document.getElementById('live-tbody'); 
         tbody.innerHTML='';
 
-        if(!subject||!code){ 
-            alert('Enter subject and code'); 
+        if(!code){ 
+            alert('Enter session code'); 
             return; 
         }
 
         db.collection('attendance')
-        .where('subject','==',subject)
         .where('code','==',code)
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot=>{
@@ -505,12 +515,21 @@
                 count++;
                 const d=doc.data();
                 const tr=document.createElement('tr');
-                tr.innerHTML=`<td data-label="Name">${d.name}</td><td data-label="Roll">${d.roll}</td><td data-label="Time">${new Date(d.timestamp).toLocaleTimeString()}</td><td data-label="Status">${d.status}</td><td data-label="Distance">${d.distance || '-'}m</td><td data-label="Device">${d.device.substring(0,8)}...</td>`;
+                tr.innerHTML=`<td data-label="Name">${d.name}</td>
+                              <td data-label="Roll">${d.roll}</td>
+                              <td data-label="Time">${new Date(d.timestamp).toLocaleTimeString()}</td>
+                              <td data-label="Status">${d.status}</td>
+                              <td data-label="Distance">${d.distance || '-'}m</td>
+                              <td data-label="Device">${(d.device || '').substring(0,8)}...</td>`;
                 tbody.appendChild(tr);
             });
             if(count === 0) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No attendance data yet</td></tr>';
+        }, err => {
+            console.error('Live view error:', err);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error loading data</td></tr>';
         });
     }
+
 
     function loadTeacherLive(){
         if(!currentSessionCode) return;
@@ -540,7 +559,7 @@
                         <span style="font-size:13px; color:#666;">
                             ${s.roll} • ${s.status} • 
                             <span style="color:#28a745;">${s.distance || '-'}m</span> • 
-                            <span style="font-size:11px;">${s.device.substring(0,8)}...</span>
+                            <span style="font-size:11px;">${(s.device || '').substring(0,8)}...</span>
                         </span>
                     </div>
                 `).join('')}
@@ -549,7 +568,6 @@
         });
     }
 
- 
     async function loadTeacherStats(){
         if(!currentSessionCode) return;
         try {
@@ -572,7 +590,7 @@
         }
     }
 
-   
+
     async function loadAllAttendance() {
         const tbody = document.getElementById('all-tbody');
         const dateFilter = document.getElementById('date-filter').value;
@@ -594,8 +612,8 @@
             const records = snapshot.docs.map(doc => doc.data());
             
             const filteredRecords = records.filter(r => 
-                (!subjectFilter || r.subject.toLowerCase().includes(subjectFilter)) &&
-                (!rollFilter || r.roll.toLowerCase().includes(rollFilter))
+                (!subjectFilter || (r.subject || '').toLowerCase().includes(subjectFilter)) &&
+                (!rollFilter || (r.roll || '').toLowerCase().includes(rollFilter))
             );
             
             tbody.innerHTML = '';
@@ -630,8 +648,45 @@
         }
     }
 
- 
-    async function exportFilteredData() {
+
+    async function exportFlatData() {
+        const dateFrom = document.getElementById('export-date-from').value;
+        const dateTo = document.getElementById('export-date-to').value;
+        
+        try {
+            let query = db.collection('attendance').orderBy('timestamp', 'desc');
+            
+            if(dateFrom) {
+                const start = new Date(dateFrom + 'T00:00:00').getTime();
+                query = query.where('timestamp', '>=', start);
+            }
+            if(dateTo) {
+                const end = new Date(dateTo + 'T23:59:59').getTime();
+                query = query.where('timestamp', '<=', end);
+            }
+            
+            const snapshot = await query.get();
+            const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            let csv = '';
+            csv += `RIMT UNIVERSITY - SMART ATTENDANCE RAW DATA\n`;
+            csv += `Generated: ${new Date().toLocaleString('en-IN')}\n`;
+            csv += `Total Records: ${records.length}\n\n`;
+            csv += `ID,Name,Roll,Subject,Session Code,Timestamp,Status,Distance (m),Device\n`;
+
+            records.forEach(r => {
+                csv += `"${r.id}","${r.name}","${r.roll}","${r.subject}","${r.code}","${new Date(r.timestamp).toLocaleString('en-IN')}","${r.status || 'Present'}","${r.distance || ''}","${(r.device || '').substring(0,8)}..."\n`;
+            });
+
+            downloadCSV(csv, `RIMT_Attendance_Raw_${getFormattedDate()}.csv`);
+            
+        } catch(e) {
+            console.error('Export flat error:', e);
+            alert('Export failed: ' + e.message);
+        }
+    }
+\
+    async function exportFilteredDataSummary() {
         const dateFrom = document.getElementById('export-date-from').value;
         const dateTo = document.getElementById('export-date-to').value;
         
@@ -654,15 +709,13 @@
             downloadCSV(csv, `RIMT_Student_Attendance_Report_${getFormattedDate()}.csv`);
             
         } catch(e) {
-            console.error('Export error:', e);
+            console.error('Export summary error:', e);
             alert('Export failed: ' + e.message);
         }
     }
 
     function exportSummaryReport() {
-        document.getElementById('export-date-from').value = '';
-        document.getElementById('export-date-to').value = '';
-        exportFilteredData();
+        exportFilteredDataSummary();
     }
 
     function groupByStudent(records) {
@@ -672,7 +725,7 @@
             if (!studentMap[studentKey]) {
                 studentMap[studentKey] = {
                     roll: record.roll,
-                    name: record.name.trim(),
+                    name: (record.name || '').trim(),
                     totalAttendance: 0,
                     sessions: new Set(),
                     subjects: new Set(),
@@ -692,7 +745,7 @@
                 student.avgDistance = student.totalDistance / student.totalAttendance;
             }
         });
-        return Object.values(studentMap).sort((a, b) => a.roll.localeCompare(b.roll));
+        return Object.values(studentMap).sort((a, b) => (a.roll || '').localeCompare(b.roll || ''));
     }
 
     function generateStudentReportCSV(students) {
@@ -704,9 +757,10 @@
         csv += `Roll Number,Student Name,Total Classes Attended,Unique Sessions,Unique Subjects,Attendance Rate,Average Distance (m),Detailed Records\n`;
         
         students.forEach(student => {
-            const attendanceRate = ((student.totalAttendance / student.sessions.size) * 100).toFixed(1);
+            const sessionCount = student.sessions.size || 1;
+            const attendanceRate = ((student.totalAttendance / sessionCount) * 100).toFixed(1);
             const recordsCSV = student.records.map(r => 
-                `"${r.subject}|${r.code}|${new Date(r.timestamp).toLocaleString('en-IN')}|${r.distance || 'N/A'}m|${r.device?.substring(0,8)}..."`
+                `${r.subject}|${r.code}|${new Date(r.timestamp).toLocaleString('en-IN')}|${r.distance || 'N/A'}m|${(r.device || '').substring(0,8)}...`
             ).join('; ');
             csv += `"${student.roll}","${student.name}","${student.totalAttendance}","${student.sessions.size}","${student.subjects.size}","${attendanceRate}%","${Math.round(student.avgDistance)}","${recordsCSV}"\n`;
         });
@@ -729,7 +783,7 @@
         return new Date().toISOString().split('T')[0];
     }
 
-
+   
     setInterval(()=>{
         if(currentSessionCode && teacherLoggedIn && currentTeacherSection === 'live') { 
             loadTeacherLive(); 
@@ -737,7 +791,7 @@
         }
     },3000);
 
-    console.log('RIMT Smart Attendance');
+    console.log('🚀 RIMT Smart Attendance');
 </script>
 
 <div class="footer">POWERED BY CODEVERSE – RIMT UNIVERSITY </div>
