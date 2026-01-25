@@ -3,287 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RIMT Smart Attendance</title>
+<title>RIMT Smart Attendance - UPDATED</title>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-        min-height: 100vh; 
-        padding: 20px; 
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
     .container { max-width: 1400px; margin: 0 auto; }
-    .header { 
-        text-align: center; color: white; 
-        margin-bottom: 10px; font-size: 2.5em; 
-        text-shadow: 0 2px 10px rgba(0,0,0,0.3); 
-    }
-    .tagline { 
-        text-align: center; color: #fff; 
-        font-size: 1.4em; font-weight: 500; 
-        margin-top: 10px; opacity: 0; 
-        transform: translateY(20px); 
-        animation: fadeSlideIn 1s forwards; 
-        text-shadow: 0 2px 8px rgba(0,0,0,0.3); 
-    }
+    .header { text-align: center; color: white; margin-bottom: 10px; font-size: 2.5em; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    .tagline { text-align: center; color: #fff; font-size: 1.4em; font-weight: 500; margin-top: 10px; opacity: 0; transform: translateY(20px); animation: fadeSlideIn 1s forwards; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     @keyframes fadeSlideIn { to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) { 
-        .tagline { font-size: 1.1em; } 
-        body { padding: 10px; }
-    }
-    .tabs { 
-        display: flex; gap: 10px; margin-bottom: 30px; 
-        flex-wrap: wrap; 
-    }
-    .tab-btn { 
-        flex: 1; min-width: 150px; padding: 15px; 
-        background: rgba(255,255,255,0.2); border: none; 
-        border-radius: 12px; color: white; font-size: 16px; 
-        font-weight: 600; cursor: pointer; 
-        backdrop-filter: blur(10px); transition: all 0.3s; 
-    }
-    .tab-btn.active { 
-        background: rgba(255,255,255,0.9); color: #333; 
-    }
+    @media (max-width: 768px) { .tagline { font-size: 1.1em; } }
+    .tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+    .tab-btn { flex: 1; min-width: 150px; padding: 15px; background: rgba(255,255,255,0.2); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s; }
+    .tab-btn.active, .tab-btn.authenticated { background: rgba(255,255,255,0.9); color: #333; }
     .tab-btn:hover { transform: translateY(-2px); }
-    .panel { 
-        display: none; background: rgba(255,255,255,0.95); 
-        border-radius: 20px; padding: 30px; 
-        backdrop-filter: blur(20px); 
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
-    }
+    .panel { display: none; background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px; backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
     .panel.active { display: block; }
     .form-group { margin-bottom: 20px; }
-    label { 
-        display: block; margin-bottom: 8px; 
-        font-weight: 600; color: #333; 
-    }
-    input, button { 
-        width: 100%; padding: 15px; 
-        border: 2px solid #e1e5e9; border-radius: 12px; 
-        font-size: 16px; transition: all 0.3s; 
-    }
-    input:focus { 
-        outline: none; border-color: #667eea; 
-        box-shadow: 0 0 0 3px rgba(102,126,234,0.1); 
-    }
-    button { 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-        color: white; border: none; font-weight: 600; 
-        cursor: pointer; text-transform: uppercase; 
-        letter-spacing: 1px; 
-    }
-    button:hover:not(:disabled) { 
-        transform: translateY(-2px); 
-        box-shadow: 0 10px 20px rgba(102,126,234,0.3); 
-    }
-    button:disabled { 
-        opacity: 0.6; cursor: not-allowed; transform: none; 
-    }
-    .status { 
-        padding: 15px; border-radius: 12px; 
-        margin: 20px 0; font-weight: 600; 
-        text-align: center; 
-    }
-    .success { 
-        background: #d4edda; color: #155724; 
-        border: 1px solid #c3e6cb; 
-    }
-    .error { 
-        background: #f8d7da; color: #721c24; 
-        border: 1px solid #f5c6cb; 
-    }
-    .warning { 
-        background: #fff3cd; color: #856404; 
-        border: 1px solid #ffeaa7; 
-    }
-    .live-table { 
-        width: 100%; border-collapse: collapse; 
-        margin-top: 20px; 
-    }
-    .live-table th, .live-table td { 
-        padding: 12px; text-align: left; 
-        border-bottom: 1px solid #eee; 
-    }
-    .live-table th { 
-        background: #f8f9fa; font-weight: 600; color: #333; 
-    }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+    input, button { width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 16px; transition: all 0.3s; }
+    input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+    button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .status { padding: 15px; border-radius: 12px; margin: 20px 0; font-weight: 600; text-align: center; }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    .live-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .live-table th, .live-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+    .live-table th { background: #f8f9fa; font-weight: 600; color: #333; }
     .live-table tr:hover { background: #f8f9fa; }
-    .code-display { 
-        background: white; padding: 30px; 
-        border-radius: 16px; text-align: center; 
-        margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-    }
-    .session-code { 
-        font-size: 3em; font-weight: bold; 
-        color: #667eea; letter-spacing: 5px; 
-        margin: 10px 0; 
-    }
-    .copy-btn { 
-        background: #28a745; padding: 10px 20px; 
-        font-size: 14px; margin-top: 15px; 
-        width: auto; 
-    }
-    .end-session-btn { 
-        background: #dc3545 !important; color: white; 
-        padding: 15px 30px !important; margin: 15px 0 !important; 
-        font-size: 16px !important; width: auto !important; 
-    }
-    .end-session-btn:hover:not(:disabled) { 
-        background: #c82333 !important; transform: translateY(-2px); 
-    }
-    .stats-grid { 
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-        gap: 20px; margin: 20px 0; 
-    }
-    .stat-card { 
-        background: white; padding: 25px; 
-        border-radius: 16px; text-align: center; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-        transition: transform 0.3s; 
-    }
+    .code-display { background: white; padding: 30px; border-radius: 16px; text-align: center; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .session-code { font-size: 3em; font-weight: bold; color: #667eea; letter-spacing: 5px; margin: 10px 0; }
+    .copy-btn { background: #28a745; padding: 10px 20px; font-size: 14px; margin-top: 15px; width: auto; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+    .stat-card { background: white; padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
     .stat-card:hover { transform: translateY(-5px); }
-    .stat-number { 
-        font-size: 2.5em; font-weight: bold; color: #667eea; 
-    }
-    .stat-label { 
-        color: #666; font-size: 14px; 
-        text-transform: uppercase; letter-spacing: 1px; 
-    }
-    .subject-grid { 
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-        gap: 20px; 
-    }
-    .subject-card { 
-        background: white; border-radius: 16px; 
-        padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-    }
-    .subject-header { 
-        display: flex; justify-content: space-between; 
-        align-items: center; margin-bottom: 15px; 
-        padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; 
-    }
-    .subject-name { 
-        font-size: 1.3em; font-weight: 600; color: #333; 
-    }
-    .count-badge { 
-        background: #667eea; color: white; 
-        padding: 6px 12px; border-radius: 20px; 
-        font-weight: 600; font-size: 14px; 
-    }
-    .teacher-tabs { 
-        display: flex; gap: 10px; margin-bottom: 25px; 
-        background: white; padding: 15px; 
-        border-radius: 12px; flex-wrap: wrap; 
-    }
-    .teacher-tab-btn { 
-        flex: 1; min-width: 140px; padding: 12px; 
-        background: #f8f9fa; border: none; 
-        border-radius: 8px; color: #333; 
-        font-weight: 600; cursor: pointer; 
-        transition: all 0.3s; 
-    }
-    .teacher-tab-btn.active { 
-        background: #667eea; color: white; 
-    }
-    .filter-row { 
-        display: flex; gap: 10px; margin: 20px 0; 
-        flex-wrap: wrap; 
-    }
+    .stat-number { font-size: 2.5em; font-weight: bold; color: #667eea; }
+    .stat-label { color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .subject-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+    .subject-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; }
+    .subject-name { font-size: 1.3em; font-weight: 600; color: #333; }
+    .count-badge { background: #667eea; color: white; padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 14px; }
+    .teacher-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: white; padding: 15px; border-radius: 12px; flex-wrap: wrap; }
+    .teacher-tab-btn { flex: 1; min-width: 140px; padding: 12px; background: #f8f9fa; border: none; border-radius: 8px; color: #333; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .teacher-tab-btn.active { background: #667eea; color: white; }
+    .filter-row { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
     .filter-row input { flex: 1; min-width: 200px; }
-    .filter-row button { 
-        padding: 12px 24px; white-space: nowrap; 
-    }
-    .summary-stats { 
-        margin-top: 20px; padding: 20px; 
-        background: #f8f9fa; border-radius: 12px; 
-        font-weight: 600; 
-    }
-    .footer { 
-        margin-top: 40px; text-align: center; 
-        color: rgba(255,255,255,0.85); 
-        font-size: 14px; font-weight: 600; 
-        letter-spacing: 0.5px; 
-    }
+    .filter-row button { padding: 12px 24px; white-space: nowrap; }
+    .summary-stats { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px; font-weight: 600; }
+    .auth-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-email { font-weight: 600; color: #333; }
+    .logout-btn { background: #dc3545; padding: 8px 16px; font-size: 14px; }
+    .footer { margin-top: 40px; text-align: center; color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+    
+    
+    .location-status { padding: 15px; border-radius: 12px; margin: 15px 0; font-weight: 600; text-align: center; }
+    .location-ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .location-waiting { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; animation: pulse 1.5s infinite; }
+    .location-denied { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .distance-info { font-size: 14px; color: #666; margin-top: 5px; }
+    .proximity-ok { color: #28a745 !important; font-weight: bold; }
+    .proximity-far { color: #dc3545 !important; font-weight: bold; }
+    
     @media (max-width: 768px) {
-        .tabs, .teacher-tabs, .filter-row { flex-direction: column; }
+        .tabs, .teacher-tabs, .filter-row, .auth-header { flex-direction: column; }
         .stats-grid, .subject-grid { grid-template-columns: 1fr; }
         .session-code { font-size: 2em; }
         .live-table { font-size: 14px; }
         .live-table thead { display: none; }
-        .live-table tr { 
-            display: block; margin-bottom: 15px; 
-            padding: 15px; background: white; 
-            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-        }
-        .live-table td { 
-            display: block; text-align: right; 
-            padding: 5px 0; position: relative; 
-        }
-        .live-table td:before { 
-            content: attr(data-label); float: left; 
-            font-weight: 600; color: #666; 
-        }
+        .live-table tr { display: block; margin-bottom: 15px; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .live-table td { display: block; text-align: right; padding: 5px 0; position: relative; }
+        .live-table td:before { content: attr(data-label); float: left; font-weight: 600; color: #666; }
     }
-    .loading { text-align: center; padding: 40px; color: #666; }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="header">🎓 RIMT Smart Attendance</h1>
-    <h2 class="tagline">MODERN CLASSROOMS, HAPPIER TEACHERS</h2>
+    <h1 class="header">RIMT Smart Attendance</h1>
+    <h2 class="tagline">Smarter Classrooms, Happier Teachers</h2>
     
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('teacher', this)">👨‍🏫 Teacher Panel</button>
-        <button class="tab-btn" onclick="switchTab('student', this)">🎓 Student Panel</button>
-        <button class="tab-btn" onclick="switchTab('live', this)">📊 Live View</button>
+        <button class="tab-btn active" onclick="switchTab('teacher', event)">👨‍🏫 Teacher Panel</button>
+        <button class="tab-btn" onclick="switchTab('student', event)">🎓 Student Panel</button>
+        <button class="tab-btn" onclick="switchTab('live', event)">📊 Live View</button>
     </div>
 
-    <!-- TEACHER PANEL -->
+
     <div id="teacher-panel" class="panel active">
-        <div class="form-group">
-            <label>👤 Teacher Username</label>
-            <input type="text" id="t-username" placeholder="admin" value="admin">
+        <div id="login-form">
+            <div class="location-status" id="teacher-location-status"></div>
+            <div class="form-group">
+                <label>📧 Email</label>
+                <input type="email" id="t-email" placeholder="teacher@rimt.ac.in">
+            </div>
+            <div class="form-group">
+                <label>🔒 Password</label>
+                <input type="password" id="t-password" placeholder="Enter password">
+            </div>
+            <button onclick="teacherLogin()" id="login-btn">🚀 Login with Firebase</button>
+            <div id="login-status"></div>
         </div>
-        <div class="form-group">
-            <label>🔒 Password</label>
-            <input type="password" id="t-password" placeholder="admin123" value="admin123">
-        </div>
-        <button onclick="teacherLogin()" id="login-btn">🚀 Quick Login</button>
-        <div id="login-status"></div>
 
         <div id="teacher-content" style="display: none;">
-            <!-- TEACHER SUB-TABS -->
-            <div class="teacher-tabs">
-                <button class="teacher-tab-btn active" onclick="showTeacherSection('live', this)">📊 Live Session</button>
-                <button class="teacher-tab-btn" onclick="showTeacherSection('all', this)">📈 All Records</button>
-                <button class="teacher-tab-btn" onclick="showTeacherSection('export', this)">📥 Export Data</button>
+            <div class="auth-header">
+                <div class="user-info">
+                    <span>👋 Welcome</span>
+                    <span class="user-email" id="user-email">-</span>
+                </div>
+                <button class="logout-btn" onclick="teacherLogout()">🚪 Logout</button>
             </div>
 
-            <!-- LIVE SESSION SECTION -->
+            <div class="teacher-tabs">
+                <button class="teacher-tab-btn active" onclick="showTeacherSection('live')">📊 Live Session</button>
+                <button class="teacher-tab-btn" onclick="showTeacherSection('all')">📈 All Records</button>
+                <button class="teacher-tab-btn" onclick="showTeacherSection('export')">📥 Export Data</button>
+            </div>
+
+           
             <div id="teacher-live-section">
                 <div class="form-group">
-                    <label>📚 Subject Name</label>
-                    <input type="text" id="t-subject" placeholder="e.g. Mathematics, Physics">
+                    <label>📚 Subject</label>
+                    <input type="text" id="t-subject" placeholder="e.g. Mathematics">
                 </div>
+                <div class="location-status" id="teacher-session-location"></div>
                 <button onclick="generateCode()" id="generate-btn">🎫 Generate Session Code</button>
 
                 <div id="code-display" style="display: none;">
                     <div class="code-display">
-                        <h3>📲 Share This Session Code</h3>
+                        <h3>📲 Session Code</h3>
                         <div class="session-code" id="session-code"></div>
-                        <p style="color: #666; font-size: 18px;">
-                            🔗 Share with students<br>
-                            📍 Location-based (100m radius)<br>
-                            🔒 One device per student per session
-                        </p>
+                        <p style="color: #666; font-size: 18px;">Share this 6-digit code with students</p>
                         <button class="copy-btn" onclick="copyCode()">📋 Copy Code</button>
                     </div>
                 </div>
-
-                <button id="end-session-btn" onclick="endSession()" class="end-session-btn" style="display:none;">
-                    🛑 End Live Session
-                </button>
 
                 <div class="stats-grid" id="teacher-stats" style="display: none;">
                     <div class="stat-card">
@@ -298,25 +154,21 @@
                         <div class="stat-number" id="unique-devices">-</div>
                         <div class="stat-label">Unique Devices</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="avg-distance">-</div>
-                        <div class="stat-label">Avg Distance (m)</div>
-                    </div>
                 </div>
 
                 <div id="teacher-live">
                     <h3>📈 Live Attendance Dashboard</h3>
-                    <div id="teacher-live-data" class="loading">Waiting for students...</div>
+                    <div id="teacher-live-data" class="subject-grid"></div>
                 </div>
             </div>
 
-            <!-- ALL RECORDS SECTION -->
+           
             <div id="teacher-all-section" style="display: none;">
                 <h3>📋 Complete Attendance Records</h3>
                 <div class="filter-row">
                     <input type="date" id="date-filter">
-                    <input type="text" id="subject-filter" placeholder="Filter subject...">
-                    <input type="text" id="roll-filter" placeholder="Filter roll number...">
+                    <input type="text" id="subject-filter" placeholder="Filter by subject...">
+                    <input type="text" id="roll-filter" placeholder="Filter by roll number...">
                     <button onclick="loadAllAttendance()" style="background:#28a745;">🔄 Load Records</button>
                 </div>
                 <div id="all-attendance-table">
@@ -327,7 +179,7 @@
                             </tr>
                         </thead>
                         <tbody id="all-tbody">
-                            <tr><td colspan="7">Click "Load Records" to view data</td></tr>
+                            <tr><td colspan="7">Click "Load Records" to view all data</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -335,29 +187,26 @@
                     <strong>Total Records: <span id="total-records">0</span> | 
                     Unique Students: <span id="unique-students">0</span> | 
                     Sessions: <span id="total-sessions">0</span> | 
-                    Date: <span id="date-range">-</span></strong>
+                    Date Range: <span id="date-range">-</span></strong>
                 </div>
             </div>
 
-            <!-- EXPORT SECTION -->
+         
             <div id="teacher-export-section" style="display: none;">
-                <h3>📥 Professional Reports</h3>
+                <h3>📥 Export All Attendance Data</h3>
                 <div class="filter-row">
                     <input type="date" id="export-date-from">
                     <input type="date" id="export-date-to">
-                    <button onclick="exportFilteredData()" class="copy-btn" style="background:#28a745;">📅 Date Range</button>
-                    <button onclick="exportSummaryReport()" class="copy-btn" style="background:#007bff;">📊 Full Summary</button>
+                    <button onclick="exportFilteredData()" class="copy-btn" style="width:auto; padding:15px 30px; font-size:16px; background:#28a745;">💾 Download CSV</button>
                 </div>
-                <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-top:20px;">
-                    <strong>✅ Excel Ready:</strong> Student-wise % | All sessions | Distance tracking
-                </div>
+                <div id="export-status" class="status" style="display:none;"></div>
+                <p style="color:#666; margin-top:20px;">Export compatible with Google Sheets, Excel ✓</p>
             </div>
         </div>
     </div>
 
-    <!-- STUDENT PANEL -->
     <div id="student-panel" class="panel">
-        <h3>🎓 Student Attendance</h3>
+        <div class="location-status" id="student-location-status"></div>
         <div class="form-group">
             <label>👤 Full Name</label>
             <input type="text" id="s-name" placeholder="Enter your full name">
@@ -374,13 +223,12 @@
             <label>🔢 Session Code</label>
             <input type="text" id="s-code" placeholder="6-digit code from teacher">
         </div>
-        <button onclick="markAttendance()" id="attendance-btn">✅ Mark Attendance</button>
+        <button onclick="markAttendance()" id="attendance-btn">✅ Mark My Attendance</button>
         <div id="attendance-status"></div>
     </div>
 
-    <!-- LIVE VIEW PANEL -->
+    
     <div id="live-panel" class="panel">
-        <h3>📊 Live Attendance Monitor</h3>
         <div class="form-group">
             <label>📚 Subject</label>
             <input type="text" id="l-subject" placeholder="e.g. Mathematics">
@@ -393,632 +241,557 @@
         <div id="live-table-container">
             <table class="live-table" id="live-table">
                 <thead>
-                    <tr><th>Name</th><th>Roll</th><th>Time</th><th>Status</th><th>Distance</th><th>Device</th></tr>
+                    <tr><th>Name</th><th>Roll</th><th>Time</th><th>Status</th><th>Device</th><th>Distance</th></tr>
                 </thead>
-                <tbody id="live-tbody">
-                    <tr><td colspan="6">Enter details and refresh</td></tr>
-                </tbody>
+                <tbody id="live-tbody"></tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- FIREBASE CDN - PRODUCTION READY -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js';
-import { getFirestore, collection, doc, addDoc, getDoc, setDoc, updateDoc, onSnapshot, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js';
 
-window.firebaseImports = { initializeApp, getFirestore, collection, doc, addDoc, getDoc, setDoc, updateDoc, onSnapshot, query, where, orderBy, limit, getDocs };
-</script>
-
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script>
-'use strict';
+   
+    const firebaseConfig = {
+        apiKey: "AIzaSyCMpPODrwHBc-0e0sWFKUaggZNK8RGXL7w",
+        authDomain: "rimt-smart-attendance-767ad.firebaseapp.com",
+        projectId: "rimt-smart-attendance-767ad",
+        storageBucket: "rimt-smart-attendance-767ad.firebasestorage.app",
+        messagingSenderId: "158157431900",
+        appId: "1:158157431900:web:f9651d76d2b1c67ff17299"
+    };
 
-// 🔥 YOUR FIREBASE CONFIG - REPLACE WITH YOUR ACTUAL CONFIG
-const firebaseConfig = {
-    apiKey: "AIzaSyCMpPODrwHBc-0e0sWFKUaggZNK8RGXL7w",
-    authDomain: "rimt-smart-attendance-767ad.firebaseapp.com",
-    projectId: "rimt-smart-attendance-767ad",
-    storageBucket: "rimt-smart-attendance-767ad.firebasestorage.app",
-    messagingSenderId: "158157431900",
-    appId: "1:158157431900:web:f9651d76d2b1c67ff17299"
-};
-
-// ✅ INITIALIZE FIRESTORE MODERN v10
-const app = firebaseImports.initializeApp(firebaseConfig);
-const db = firebaseImports.getFirestore(app);
-console.log('✅ Firebase v10 initialized perfectly!');
-
-// ✅ STABLE DEVICE ID
-let deviceId = localStorage.getItem('attendanceDeviceId');
-if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem('attendanceDeviceId', deviceId);
-}
-
-// ✅ LOCATION MANAGER
-let locationCache = null;
-let locationPromise = null;
-
-async function getLocation() {
-    if (locationCache && (Date.now() - locationCache.timestamp) < 60000) {
-        return locationCache.position;
-    }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
     
-    if (locationPromise) return locationPromise;
-    
-    locationPromise = new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                locationCache = { position: pos, timestamp: Date.now() };
-                locationPromise = null;
-                resolve(pos);
-            },
-            (err) => {
-                locationPromise = null;
-                reject(err);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 60000
+    const deviceId = btoa(navigator.userAgent + screen.width + screen.height + Date.now()).substring(0,32);
+    let currentSessionCode = '';
+    let currentTeacherSection = 'live';
+    let currentUser = null;
+    const MAX_PROXIMITY_DISTANCE = 0.1; 
+
+    async function getCurrentLocation(showStatusId = null) {
+        return new Promise((resolve) => {
+            if (!navigator.geolocation) {
+                if (showStatusId) showLocationStatus(showStatusId, '❌ Geolocation not supported', 'denied');
+                resolve({ allowed: false, reason: 'Geolocation not supported' });
+                return;
             }
-        );
-    });
-    
-    return locationPromise;
-}
 
-// ✅ DISTANCE CALCULATION
-function calculateDistance(lat1, lng1, lat2, lng2) {
-    const R = 6371000; // Earth radius in meters
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return Math.round(R * c);
-}
+            if (showStatusId) showLocationStatus(showStatusId, '📍 Getting location...', 'waiting');
 
-// GLOBAL STATE
-let currentSessionCode = '';
-let teacherLoggedIn = false;
-let currentTeacherSection = 'live';
-let liveListeners = [];
-
-// ✅ TAB MANAGEMENT
-function switchTab(tabName, button) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabName + '-panel').classList.add('active');
-    button.classList.add('active');
-}
-
-// ✅ TEACHER LOGIN (SIMPLE & SECURE)
-function teacherLogin() {
-    const username = document.getElementById('t-username').value.trim();
-    const password = document.getElementById('t-password').value;
-    const statusEl = document.getElementById('login-status');
-    const loginBtn = document.getElementById('login-btn');
-
-    if (username !== 'admin' || password !== 'admin123') {
-        statusEl.innerHTML = '<div class="status error">❌ Invalid credentials</div>';
-        return;
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    if (showStatusId) showLocationStatus(showStatusId, `📍 Location OK: ${lat.toFixed(4)}, ${lng.toFixed(4)}`, 'ok');
+                    resolve({ 
+                        allowed: true, 
+                        lat, 
+                        lng,
+                        accuracy: position.coords.accuracy 
+                    });
+                },
+                (error) => {
+                    let reason = 'Location access denied';
+                    if (error.code === 1) reason = 'Please enable location permission';
+                    if (error.code === 2) reason = 'Location unavailable';
+                    if (error.code === 3) reason = 'Location timeout';
+                    if (showStatusId) showLocationStatus(showStatusId, `❌ ${reason}`, 'denied');
+                    resolve({ allowed: false, reason });
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+            );
+        });
     }
 
-    loginBtn.disabled = true;
-    loginBtn.textContent = '✅ Logging in...';
-
-    setTimeout(() => {
-        statusEl.innerHTML = '<div class="status success">✅ Welcome to Teacher Dashboard!</div>';
-        document.getElementById('teacher-content').style.display = 'block';
-        loginBtn.style.display = 'none';
-        teacherLoggedIn = true;
-        loginBtn.disabled = false;
-    }, 1000);
-}
-
-// ✅ TEACHER SECTION SWITCH
-function showTeacherSection(section, button) {
-    currentTeacherSection = section;
-    document.querySelectorAll('#teacher-content > div[id$="-section"]').forEach(div => {
-        div.style.display = 'none';
-    });
-    document.querySelectorAll('.teacher-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.getElementById('teacher-' + section + '-section').style.display = 'block';
-    button.classList.add('active');
-    
-    if (section === 'all') loadAllAttendance();
-    if (section === 'live' && currentSessionCode) {
-        loadTeacherLive();
-        loadTeacherStats();
-    }
-}
-
-// ✅ GENERATE SESSION CODE
-async function generateCode() {
-    const subject = document.getElementById('t-subject').value.trim();
-    if (!subject) {
-        alert('Please enter subject name');
-        return;
+    function showLocationStatus(statusId, message, type) {
+        const statusDiv = document.getElementById(statusId);
+        if (statusDiv) {
+            statusDiv.innerHTML = `<span class="location-${type}">${message}</span>`;
+            statusDiv.className = `location-status location-${type}`;
+        }
     }
 
-    const generateBtn = document.getElementById('generate-btn');
-    generateBtn.disabled = true;
-    generateBtn.textContent = '⏳ Creating...';
+ 
+    function calculateDistance(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 
-    try {
-        const position = await getLocation();
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
+    async function checkProximityToTeacher(sessionCode, studentLat, studentLng) {
+        try {
+            const sessionDoc = await db.collection('sessions').doc(sessionCode).get();
+            if (!sessionDoc.exists) return { allowed: false, reason: 'Invalid session code' };
+            
+            const sessionData = sessionDoc.data();
+            if (!sessionData.teacherLat || !sessionData.teacherLng) {
+                return { allowed: false, reason: 'Teacher location not available' };
+            }
+
+            const distance = calculateDistance(studentLat, studentLng, sessionData.teacherLat, sessionData.teacherLng);
+            const distanceMeters = (distance * 1000).toFixed(0);
+            const allowed = distance <= MAX_PROXIMITY_DISTANCE;
+
+            return {
+                allowed,
+                reason: allowed ? 'Within teacher range' : 'Too far from teacher',
+                distanceKm: distance,
+                distanceMeters,
+                teacherLat: sessionData.teacherLat,
+                teacherLng: sessionData.teacherLng
+            };
+        } catch (error) {
+            return { allowed: false, reason: 'Session check failed: ' + error.message };
+        }
+    }
+
+ 
+    function switchTab(tab, event){
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tab+'-panel').classList.add('active');
+        event.target.classList.add('active');
+    }
+
+  
+    async function teacherLogin(){
+        const email = document.getElementById('t-email').value.trim();
+        const password = document.getElementById('t-password').value;
+        const status = document.getElementById('login-status');
+        const btn = document.getElementById('login-btn');
+
+        if(!email || !password){ 
+            status.innerHTML = '<div class="status error">❌ Enter email and password</div>'; 
+            return; 
+        }
+        btn.disabled = true; 
+        btn.textContent='🔄 Logging in...';
+        status.innerHTML = '';
+
+        try {
+            const result = await auth.signInWithEmailAndPassword(email, password);
+            currentUser = result.user;
+            status.innerHTML = '<div class="status success">✅ Login Successful! Welcome ' + email + '</div>';
+            document.getElementById('user-email').textContent = email;
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('teacher-content').style.display = 'block';
+            document.querySelector('.tab-btn[onclick*="teacher"]').classList.add('authenticated');
+        } catch(error) {
+            status.innerHTML = '<div class="status error">❌ Login failed: ' + error.message + '</div>';
+        }
+        btn.disabled = false; 
+        btn.textContent = '🚀 Login with Firebase';
+    }
+
+    async function teacherLogout(){
+        try {
+            await auth.signOut();
+            currentUser = null;
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('teacher-content').style.display = 'none';
+            document.querySelector('.tab-btn[onclick*="teacher"]').classList.remove('authenticated');
+            document.getElementById('t-email').value = '';
+            document.getElementById('t-password').value = '';
+            document.getElementById('login-status').innerHTML = '';
+        } catch(error) {
+            console.error('Logout error:', error);
+        }
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (user && document.getElementById('teacher-panel').classList.contains('active')) {
+            currentUser = user;
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('teacher-content').style.display = 'block';
+        }
+    });
+
+    function showTeacherSection(section) {
+        currentTeacherSection = section;
+        document.querySelectorAll('#teacher-content > div[id$="-section"]').forEach(div => div.style.display = 'none');
+        document.querySelectorAll('.teacher-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('teacher-' + section + '-section').style.display = 'block';
+        event.target.classList.add('active');
+        
+        if(section === 'all') loadAllAttendance();
+    }
+
+    async function generateCode(){
+        if (!currentUser) { alert('Please login first!'); return; }
+        const subject = document.getElementById('t-subject').value.trim();
+        if(!subject){ alert('Enter subject first!'); return; }
+
+        const teacherLoc = await getCurrentLocation('teacher-session-location');
+        if (!teacherLoc.allowed) {
+            alert('❌ Teacher location required! Enable location permission.');
+            return;
+        }
+
+        const code = Math.floor(100000 + Math.random()*900000).toString();
         currentSessionCode = code;
 
-        // Create session in Firestore
-        await firebaseImports.setDoc(firebaseImports.doc(db, 'sessions', code), {
-            subject,
-            code,
-            teacherLat: position.coords.latitude,
-            teacherLng: position.coords.longitude,
-            radius: 100,
-            createdAt: Date.now(),
-            endedAt: null,
-            isActive: true
-        });
-
         document.getElementById('session-code').textContent = code;
-        document.getElementById('code-display').style.display = 'block';
-        document.getElementById('end-session-btn').style.display = 'block';
-        document.getElementById('teacher-stats').style.display = 'grid';
+        document.getElementById('code-display').style.display='block';
+        document.getElementById('teacher-stats').style.display='grid';
 
-        generateBtn.textContent = '✅ New Session Active';
-        loadTeacherLive();
-        loadTeacherStats();
-
-    } catch (error) {
-        console.error('Session creation error:', error);
-        alert('Location access required. Please enable GPS.');
-    } finally {
-        generateBtn.disabled = false;
-        generateBtn.textContent = '🎫 Generate Session Code';
-    }
-}
-
-// ✅ END SESSION
-async function endSession() {
-    if (!currentSessionCode) return;
-
-    if (!confirm('🛑 End this session? No more attendance after this.')) return;
-
-    const endBtn = document.getElementById('end-session-btn');
-    endBtn.disabled = true;
-    endBtn.textContent = '⏳ Ending...';
-
-    try {
-        await firebaseImports.updateDoc(firebaseImports.doc(db, 'sessions', currentSessionCode), {
-            isActive: false,
-            endedAt: Date.now()
-        });
-        alert('✅ Session ended successfully!');
-        endBtn.textContent = '✅ Session Ended';
-    } catch (error) {
-        console.error('End session error:', error);
-        alert('Error ending session');
-    }
-}
-
-// ✅ COPY CODE
-function copyCode() {
-    navigator.clipboard.writeText(currentSessionCode).then(() => {
-        alert('✅ Session code copied!');
-    }).catch(() => {
-        prompt('Copy this code:', currentSessionCode);
-    });
-}
-
-// ✅ MARK ATTENDANCE (STUDENT)
-async function markAttendance() {
-    const name = document.getElementById('s-name').value.trim();
-    const roll = document.getElementById('s-roll').value.trim();
-    const subject = document.getElementById('s-subject').value.trim();
-    const code = document.getElementById('s-code').value.trim();
-    const statusEl = document.getElementById('attendance-status');
-    const btn = document.getElementById('attendance-btn');
-
-    if (!name || !roll || !subject || !code) {
-        statusEl.innerHTML = '<div class="status error">❌ Fill all fields</div>';
-        return;
+        try {
+            await db.collection('sessions').doc(code).set({ 
+                subject, code, createdAt: Date.now(), isActive: true,
+                teacherEmail: currentUser.email, teacherUid: currentUser.uid,
+                teacherLat: teacherLoc.lat,
+                teacherLng: teacherLoc.lng,
+                teacherAccuracy: teacherLoc.accuracy
+            });
+            console.log('✅ Proximity session created:', code, teacherLoc);
+            loadTeacherLive();
+            loadTeacherStats();
+        } catch(e) {
+            console.error('❌ Generate code error:', e);
+            alert('Error: Check Firebase rules - ' + e.message);
+        }
     }
 
-    btn.disabled = true;
-    btn.textContent = '⏳ Checking...';
-    statusEl.innerHTML = '';
+    function copyCode(){ 
+        navigator.clipboard.writeText(currentSessionCode).then(()=>{
+            alert('✅ Code copied to clipboard!');
+        }); 
+    }
 
-    try {
-        // Check if device already attended this session
-        const q = firebaseImports.query(
-            firebaseImports.collection(db, 'attendance'),
-            firebaseImports.where('code', '==', code),
-            firebaseImports.where('device', '==', deviceId)
-        );
-        const snapshot = await firebaseImports.getDocs(q);
+    
+    async function markAttendance(){
+        const name=document.getElementById('s-name').value.trim();
+        const roll=document.getElementById('s-roll').value.trim();
+        const subject=document.getElementById('s-subject').value.trim();
+        const code=document.getElementById('s-code').value.trim();
+        const statusDiv=document.getElementById('attendance-status');
+        const btn=document.getElementById('attendance-btn');
+
+        if(!name||!roll||!subject||!code){ 
+            statusDiv.innerHTML='<div class="status error">❌ Fill all fields</div>'; 
+            return; 
+        }
+
+        btn.disabled=true; 
+        btn.textContent='📍 Getting location...'; 
+        statusDiv.innerHTML='';
+
+        try {
+            // STEP 1: Get student location
+            const studentLoc = await getCurrentLocation('student-location-status');
+            if (!studentLoc.allowed) {
+                statusDiv.innerHTML=`<div class="status error">❌ Location required: ${studentLoc.reason}</div>`;
+                btn.disabled=false; 
+                btn.textContent='✅ Mark My Attendance';
+                return;
+            }
+
         
-        if (!snapshot.empty) {
-            statusEl.innerHTML = '<div class="status warning">⚠️ Already marked from this device!</div>';
-            return;
-        }
+            btn.textContent='🔍 Checking teacher proximity...';
+            const proximity = await checkProximityToTeacher(code, studentLoc.lat, studentLoc.lng);
+            
+            if (!proximity.allowed) {
+                statusDiv.innerHTML=`
+                    <div class="status error">
+                        🚫 Too far from teacher!<br>
+                        📏 Distance: <span class="proximity-far">${proximity.distanceMeters}m</span><br>
+                        <small>Must be within 100m of teacher (Max: 100m)</small>
+                    </div>
+                `;
+                btn.disabled=false; 
+                btn.textContent='✅ Mark My Attendance';
+                return;
+            }
 
-        // Get session details
-        const sessionDoc = await firebaseImports.getDoc(firebaseImports.doc(db, 'sessions', code));
-        if (!sessionDoc.exists()) {
-            statusEl.innerHTML = '<div class="status error">❌ Invalid session code</div>';
-            return;
-        }
+       
+            btn.textContent='✅ Final checks...';
+            const duplicateCheck = await db.collection('attendance')
+                .where('code', '==', code)
+                .where('device', '==', deviceId)
+                .limit(1)
+                .get();
 
-        const session = sessionDoc.data();
-        if (!session.isActive) {
-            statusEl.innerHTML = '<div class="status error">❌ Session closed</div>';
-            return;
-        }
+            if (!duplicateCheck.empty) {
+                statusDiv.innerHTML='<div class="status error">🚫 Already marked for this session!</div>';
+                btn.disabled=false; 
+                btn.textContent='✅ Mark My Attendance';
+                return;
+            }
 
-        // Check location
-        const position = await getLocation();
-        const distance = calculateDistance(
-            session.teacherLat, session.teacherLng,
-            position.coords.latitude, position.coords.longitude
-        );
+         
+            await db.collection('attendance').add({ 
+                name, roll, subject, code, device: deviceId, 
+                status:'Present', timestamp: Date.now(),
+                lat: studentLoc.lat, lng: studentLoc.lng,
+                distanceToTeacher: proximity.distanceMeters + 'm',
+                teacherDistanceKm: proximity.distanceKm,
+                accuracy: studentLoc.accuracy
+            });
 
-        if (distance > session.radius) {
-            statusEl.innerHTML = `<div class="status error">❌ Too far (${distance}m) - Max: ${session.radius}m</div>`;
-            return;
-        }
-
-        // Mark attendance
-        await firebaseImports.addDoc(firebaseImports.collection(db, 'attendance'), {
-            name, roll, subject, code, device: deviceId,
-            status: 'Present',
-            timestamp: Date.now(),
-            distance: Math.round(distance),
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-        });
-
-        statusEl.innerHTML = `<div class="status success">✅ Attendance marked! (${distance}m)</div>`;
-        
-        // Clear form
-        document.getElementById('s-name').value = '';
-        document.getElementById('s-roll').value = '';
-        document.getElementById('s-subject').value = '';
-        document.getElementById('s-code').value = '';
-
-    } catch (error) {
-        console.error('Attendance error:', error);
-        let message = 'Location error';
-        if (error.code === 1) message = 'GPS permission denied';
-        else if (error.code === 2) message = 'GPS unavailable';
-        else if (error.code === 3) message = 'Location timeout';
-        statusEl.innerHTML = `<div class="status error">❌ ${message}</div>`;
-    } finally {
-        btn.disabled = false;
-        btn.textContent = '✅ Mark Attendance';
-    }
-}
-
-// ✅ LIVE VIEW
-function loadLiveAttendance() {
-    const subject = document.getElementById('l-subject').value.trim();
-    const code = document.getElementById('l-code').value.trim();
-    const tbody = document.getElementById('live-tbody');
-
-    if (!subject || !code) {
-        alert('Enter subject and code');
-        return;
-    }
-
-    // Clear previous listeners
-    liveListeners.forEach(unsub => unsub());
-    liveListeners = [];
-
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">🔄 Loading live data...</td></tr>';
-
-    const q = firebaseImports.query(
-        firebaseImports.collection(db, 'attendance'),
-        firebaseImports.where('subject', '==', subject),
-        firebaseImports.where('code', '==', code),
-        firebaseImports.orderBy('timestamp', 'desc'),
-        firebaseImports.limit(50)
-    );
-
-    const unsub = firebaseImports.onSnapshot(q, (snapshot) => {
-        tbody.innerHTML = '';
-        let count = 0;
-        
-        snapshot.forEach((doc) => {
-            count++;
-            const data = doc.data();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td data-label="Name">${data.name || 'N/A'}</td>
-                <td data-label="Roll">${data.roll || 'N/A'}</td>
-                <td data-label="Time">${new Date(data.timestamp).toLocaleString()}</td>
-                <td data-label="Status"><span style="color:#28a745;">${data.status}</span></td>
-                <td data-label="Distance">${data.distance || '-'}m</td>
-                <td data-label="Device">${data.device?.slice(0,8)}...</td>
+            statusDiv.innerHTML=`
+                <div class="status success">
+                    ✅ Attendance marked successfully!<br>
+                    📏 Distance to teacher: <span class="proximity-ok">${proximity.distanceMeters}m</span> ✓
+                </div>
             `;
-            tbody.appendChild(row);
+            
+            document.getElementById('s-name').value=''; 
+            document.getElementById('s-roll').value='';
+            document.getElementById('s-subject').value=''; 
+            document.getElementById('s-code').value='';
+            
+        } catch(e){
+            console.error('❌ Mark attendance error:', e);
+            statusDiv.innerHTML='<div class="status error">❌ Error: ' + e.message + '</div>';
+        }
+        btn.disabled=false; btn.textContent='✅ Mark My Attendance';
+    }
+
+    function loadLiveAttendance(){
+        const subject=document.getElementById('l-subject').value.trim();
+        const code=document.getElementById('l-code').value.trim();
+        const tbody=document.getElementById('live-tbody'); 
+        tbody.innerHTML='';
+
+        if(!subject||!code){ 
+            alert('Enter subject and code'); 
+            return; 
+        }
+
+        db.collection('attendance')
+        .where('subject','==',subject)
+        .where('code','==',code)
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(snapshot=>{
+            tbody.innerHTML='';
+            let count = 0;
+            snapshot.forEach(doc=>{
+                count++;
+                const d=doc.data();
+                const tr=document.createElement('tr');
+                const distance = d.distanceToTeacher || 'N/A';
+                tr.innerHTML=`<td data-label="Name">${d.name}</td><td data-label="Roll">${d.roll}</td><td data-label="Time">${new Date(d.timestamp).toLocaleTimeString()}</td><td data-label="Status">${d.status}</td><td data-label="Device">${d.device.substring(0,8)}...</td><td data-label="Distance">${distance}</td>`;
+                tbody.appendChild(tr);
+            });
+            if(count === 0) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No attendance data yet</td></tr>';
         });
+    }
 
-        if (count === 0) {
-            tbody.innerHTML = '<tr><td colspan="6">No attendance yet</td></tr>';
-        }
-    });
-
-    liveListeners.push(unsub);
-}
-
-// ✅ TEACHER LIVE DASHBOARD
-function loadTeacherLive() {
-    if (!currentSessionCode) return;
-
-    const container = document.getElementById('teacher-live-data');
-    container.innerHTML = '<div class="loading">🔄 Waiting for students...</div>';
-
-    const q = firebaseImports.query(
-        firebaseImports.collection(db, 'attendance'),
-        firebaseImports.where('code', '==', currentSessionCode),
-        firebaseImports.orderBy('timestamp', 'desc')
-    );
-
-    const unsub = firebaseImports.onSnapshot(q, (snapshot) => {
-        const students = snapshot.docs.map(doc => doc.data());
+    function loadTeacherLive(){
+        if(!currentSessionCode) return;
+        const container=document.getElementById('teacher-live-data'); 
+        container.innerHTML='<div style="text-align:center;padding:20px;">🔄 Loading live data...</div>';
         
-        if (students.length === 0) {
-            container.innerHTML = '<div class="subject-card" style="text-align:center;padding:40px;"><p>📱 No students yet<br><small>Share the session code</small></p></div>';
-            return;
-        }
-
-        const card = document.createElement('div');
-        card.className = 'subject-card';
-        card.innerHTML = `
-            <div class="subject-header">
+        db.collection('attendance')
+        .where('code','==',currentSessionCode)
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(snapshot=>{
+            const students=snapshot.docs.map(d=>d.data());
+            container.innerHTML='';
+            if(students.length===0){ 
+                container.innerHTML='<div class="subject-card" style="text-align:center;padding:40px;"><p>📱 No students marked attendance yet<br><small>Share the session code with your class</small></p></div>'; 
+                return; 
+            }
+            const card=document.createElement('div'); 
+            card.className='subject-card';
+            card.innerHTML=`<div class="subject-header">
                 <div class="subject-name">📊 Live Attendance (${students.length})</div>
-                <div class="count-badge">${students.length}</div>
+                <div class="count-badge">${students.length} students</div>
             </div>
             <div style="max-height:300px; overflow-y:auto;">
-                ${students.map(s => `
+                ${students.map(s=>`
                     <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0;">
                         <span style="font-weight:500;">${s.name}</span>
                         <span style="font-size:13px; color:#666;">
                             ${s.roll} • ${s.status} • 
-                            <span style="color:#28a745;">${s.distance || '-'}m</span> • 
-                            ${s.device?.slice(0,8)}...
+                            <span style="font-size:11px;">${(s.distanceToTeacher || 'N/A')}</span>
                         </span>
                     </div>
                 `).join('')}
-            </div>
-        `;
-        container.innerHTML = '';
-        container.appendChild(card);
-    });
-
-    liveListeners.push(unsub);
-}
-
-// ✅ TEACHER STATS
-async function loadTeacherStats() {
-    if (!currentSessionCode) return;
-
-    try {
-        const q = firebaseImports.query(
-            firebaseImports.collection(db, 'attendance'),
-            firebaseImports.where('code', '==', currentSessionCode)
-        );
-        const snapshot = await firebaseImports.getDocs(q);
-        
-        let totalPresent = 0;
-        let uniqueDevices = new Set();
-        let totalDistance = 0;
-
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            totalPresent++;
-            uniqueDevices.add(data.device);
-            if (data.distance) totalDistance += data.distance;
+            </div>`;
+            container.appendChild(card);
         });
-
-        const avgDistance = totalPresent ? Math.round(totalDistance / totalPresent) : 0;
-
-        document.getElementById('total-present').textContent = totalPresent;
-        document.getElementById('on-time').textContent = totalPresent;
-        document.getElementById('unique-devices').textContent = uniqueDevices.size;
-        document.getElementById('avg-distance').textContent = avgDistance || 0;
-
-    } catch (error) {
-        console.error('Stats error:', error);
     }
-}
 
-// ✅ ALL RECORDS
-async function loadAllAttendance() {
-    const tbody = document.getElementById('all-tbody');
-    const dateFilter = document.getElementById('date-filter').value;
-    const subjectFilter = document.getElementById('subject-filter').value.toLowerCase().trim();
-    const rollFilter = document.getElementById('roll-filter').value.toLowerCase().trim();
-
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">🔄 Loading records...</td></tr>';
-
-    try {
-        let q = firebaseImports.query(
-            firebaseImports.collection(db, 'attendance'),
-            firebaseImports.orderBy('timestamp', 'desc'),
-            firebaseImports.limit(1000)
-        );
-
-        if (dateFilter) {
-            const start = new Date(dateFilter + 'T00:00:00').getTime();
-            const end = new Date(dateFilter + 'T23:59:59').getTime();
-            q = firebaseImports.query(q,
-                firebaseImports.where('timestamp', '>=', start),
-                firebaseImports.where('timestamp', '<=', end)
-            );
+    async function loadTeacherStats(){
+        if(!currentSessionCode) return;
+        try {
+            const snapshot=await db.collection('attendance')
+                .where('code','==',currentSessionCode).get();
+            const stats={totalPresent:0, onTime:0, uniqueDevices:new Set()};
+            snapshot.forEach(doc=>{
+                const d=doc.data();
+                stats.totalPresent++; 
+                stats.onTime++; 
+                stats.uniqueDevices.add(d.device);
+            });
+            document.getElementById('total-present').textContent=stats.totalPresent;
+            document.getElementById('on-time').textContent=stats.onTime;
+            document.getElementById('unique-devices').textContent=stats.uniqueDevices.size;
+        } catch(e) {
+            console.error('❌ Stats error:', e);
         }
+    }
 
-        const snapshot = await firebaseImports.getDocs(q);
-        const records = snapshot.docs.map(doc => doc.data());
+    async function loadAllAttendance() {
+        const tbody = document.getElementById('all-tbody');
+        const dateFilter = document.getElementById('date-filter').value;
+        const subjectFilter = document.getElementById('subject-filter').value.toLowerCase();
+        const rollFilter = document.getElementById('roll-filter').value.toLowerCase();
         
-        const filteredRecords = records.filter(record => 
-            (!subjectFilter || record.subject.toLowerCase().includes(subjectFilter)) &&
-            (!rollFilter || record.roll.toLowerCase().includes(rollFilter))
-        );
-
-        tbody.innerHTML = '';
-        const uniqueStudents = new Set();
-        const uniqueSessions = new Set();
-
-        filteredRecords.forEach(record => {
-            uniqueStudents.add(record.roll);
-            uniqueSessions.add(record.code);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">🔄 Loading latest records...</td></tr>';
+        
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayStart = today.getTime();
+            const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1;
             
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td data-label="Name">${record.name || 'N/A'}</td>
-                <td data-label="Roll">${record.roll || 'N/A'}</td>
-                <td data-label="Subject">${record.subject}</td>
-                <td data-label="Session">${record.code}</td>
-                <td data-label="Time">${new Date(record.timestamp).toLocaleString()}</td>
-                <td data-label="Status"><span style="color:#28a745;">Present</span></td>
-                <td data-label="Distance">${record.distance || '-'}m</td>
-            `;
-            tbody.appendChild(row);
-        });
-
-        document.getElementById('total-records').textContent = filteredRecords.length;
-        document.getElementById('unique-students').textContent = uniqueStudents.size;
-        document.getElementById('total-sessions').textContent = uniqueSessions.size;
-        document.getElementById('date-range').textContent = dateFilter ? 
-            new Date(dateFilter).toLocaleDateString() : 'All Time';
-        document.getElementById('summary-stats').style.display = 'block';
-
-    } catch (error) {
-        console.error('Load records error:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="color:red;">Error loading data</td></tr>';
+            let query = db.collection('attendance')
+                .where('timestamp', '>=', todayStart)
+                .where('timestamp', '<=', todayEnd)
+                .orderBy('timestamp', 'desc')
+                .limit(1000);
+            
+            if(dateFilter) {
+                const start = new Date(dateFilter + 'T00:00:00').getTime();
+                const end = new Date(dateFilter + 'T23:59:59').getTime();
+                query = db.collection('attendance')
+                    .where('timestamp', '>=', start)
+                    .where('timestamp', '<=', end)
+                    .orderBy('timestamp', 'desc')
+                    .limit(1000);
+            }
+            
+            const snapshot = await query.get();
+            const records = snapshot.docs.map(doc => doc.data());
+            
+            const filteredRecords = records.filter(r => 
+                (!subjectFilter || r.subject.toLowerCase().includes(subjectFilter)) &&
+                (!rollFilter || r.roll.toLowerCase().includes(rollFilter))
+            );
+            
+            tbody.innerHTML = '';
+            const uniqueStudents = new Set();
+            const uniqueSessions = new Set();
+            
+            filteredRecords.forEach(record => {
+                uniqueStudents.add(record.roll);
+                uniqueSessions.add(record.code);
+                const tr = document.createElement('tr');
+                const distance = record.distanceToTeacher || 'N/A';
+                tr.innerHTML = `
+                    <td data-label="Name">${escapeHtml(record.name)}</td>
+                    <td data-label="Roll">${escapeHtml(record.roll)}</td>
+                    <td data-label="Subject">${escapeHtml(record.subject)}</td>
+                    <td data-label="Session">${escapeHtml(record.code)}</td>
+                    <td data-label="Time">${new Date(record.timestamp).toLocaleString()}</td>
+                    <td data-label="Status"><span style="color:#28a745; font-weight:bold;">${escapeHtml(record.status || 'Present')}</span></td>
+                    <td data-label="Distance">${distance}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('total-records').textContent = filteredRecords.length;
+            document.getElementById('unique-students').textContent = uniqueStudents.size;
+            document.getElementById('total-sessions').textContent = uniqueSessions.size;
+            document.getElementById('date-range').textContent = dateFilter ? 
+                new Date(dateFilter).toLocaleDateString() : 
+                today.toLocaleDateString() + ' (Today)';
+            document.getElementById('summary-stats').style.display = 'block';
+            
+        } catch(e) {
+            console.error('❌ Load all error:', e);
+            tbody.innerHTML = '<tr><td colspan="7" style="color:red; text-align:center;">Error loading data</td></tr>';
+        }
     }
-}
 
-// ✅ EXPORT FUNCTIONS
-async function exportFilteredData() {
-    const dateFrom = document.getElementById('export-date-from').value;
-    const dateTo = document.getElementById('export-date-to').value;
-
-    try {
-        let q = firebaseImports.query(
-            firebaseImports.collection(db, 'attendance'),
-            firebaseImports.orderBy('timestamp', 'desc')
-        );
-
-        if (dateFrom) {
-            const start = new Date(dateFrom + 'T00:00:00').getTime();
-            q = firebaseImports.query(q, firebaseImports.where('timestamp', '>=', start));
-        }
-        if (dateTo) {
-            const end = new Date(dateTo + 'T23:59:59').getTime();
-            q = firebaseImports.query(q, firebaseImports.where('timestamp', '<=', end));
-        }
-
-        const snapshot = await firebaseImports.getDocs(q);
-        const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const csv = generateCSVReport(records);
-        downloadCSV(csv, `RIMT_Attendance_${getDateString()}.csv`);
-        alert('✅ Report downloaded!');
-    } catch (error) {
-        console.error('Export error:', error);
-        alert('Export failed');
-    }
-}
-
-function exportSummaryReport() {
-    document.getElementById('export-date-from').value = '';
-    document.getElementById('export-date-to').value = '';
-    exportFilteredData();
-}
-
-function generateCSVReport(records) {
-    const students = {};
-    
-    records.forEach(record => {
-        const key = `${record.roll}_${record.name}`;
-        if (!students[key]) {
-            students[key] = {
-                roll: record.roll,
-                name: record.name,
-                total: 0,
-                sessions: new Set(),
-                subjects: new Set(),
-                distance: 0,
-                records: []
-            };
-        }
+    async function exportFilteredData() {
+        const status = document.getElementById('export-status');
+        const dateFrom = document.getElementById('export-date-from').value;
+        const dateTo = document.getElementById('export-date-to').value;
         
-        const student = students[key];
-        student.total++;
-        student.sessions.add(record.code);
-        student.subjects.add(record.subject);
-        student.records.push(record);
-        if (record.distance) student.distance += record.distance;
-    });
-
-    let csv = 'RIMT SMART ATTENDANCE REPORT\n';
-    csv += `Generated: ${new Date().toLocaleString('en-IN')}\n`;
-    csv += `Total Records: ${records.length}\n\n`;
-
-    csv += 'Roll,Name,Total Attendance,Unique Sessions,Subjects,Avg Distance,Details\n';
-    
-    Object.values(students).sort((a, b) => a.roll.localeCompare(b.roll)).forEach(student => {
-        const avgDistance = student.total ? (student.distance / student.total).toFixed(1) : 0;
-        const details = student.records.map(r => 
-            `${r.subject}(${r.code})`
-        ).join('; ');
+        status.style.display = 'block';
+        status.innerHTML = '<div class="status">🔄 Preparing CSV export...</div>';
         
-        csv += `"${student.roll}","${student.name}","${student.total}","${student.sessions.size}","${student.subjects.size}","${avgDistance}","${details}"\n`;
-    });
-
-    return csv;
-}
-
-function downloadCSV(csv, filename) {
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function getDateString() {
-    return new Date().toISOString().split('T')[0];
-}
-
-// ✅ AUTO REFRESH
-setInterval(() => {
-    if (currentSessionCode && teacherLoggedIn && currentTeacherSection === 'live') {
-        loadTeacherStats();
+        try {
+            let query = db.collection('attendance').orderBy('timestamp', 'desc').limit(5000);
+            
+            if(dateFrom) {
+                const start = new Date(dateFrom + 'T00:00:00').getTime();
+                query = query.where('timestamp', '>=', start);
+            }
+            if(dateTo) {
+                const end = new Date(dateTo + 'T23:59:59').getTime();
+                query = query.where('timestamp', '<=', end);
+            }
+            
+            const snapshot = await query.get();
+            const records = snapshot.docs.map(doc => doc.data());
+            
+            if(records.length === 0) {
+                status.innerHTML = '<div class="status error">❌ No records found</div>';
+                return;
+            }
+            
+            let csv = 'Name,Roll,Subject,Session,Status,Timestamp,Device,Distance,Latitude,Longitude\n';
+            records.forEach(r => {
+                csv += `"${escapeCsv(r.name || '')}","${escapeCsv(r.roll || '')}","${escapeCsv(r.subject || '')}","${escapeCsv(r.code || '')}","${escapeCsv(r.status || 'Present')}","${new Date(r.timestamp).toLocaleString()}","${escapeCsv((r.device || '').substring(0,8) + '...')}","${escapeCsv(r.distanceToTeacher || '')}","${r.lat || ''}","${r.lng || ''}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `RIMT_Attendance_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            status.innerHTML = `<div class="status success">✅ CSV exported! ${records.length} records</div>`;
+            setTimeout(() => status.style.display = 'none', 3000);
+            
+        } catch(e) {
+            status.innerHTML = `<div class="status error">❌ Export failed: ${e.message}</div>`;
+        }
     }
-}, 5000);
 
-// ✅ PAGE LOAD
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 RIMT Smart Attendance PRO - Fully Working!');
-    console.log('✅ Firebase v10 + Modern ESM + GitHub Pages Ready');
-});
+    function escapeHtml(text) {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
 
-console.log('✅ All systems ready - Deploy to GitHub Pages!');
+    function escapeCsv(text) {
+        if (!text) return '';
+        return text.replace(/"/g, '""');
+    }
+
+  
+    setInterval(()=>{
+        if(currentSessionCode && document.getElementById('teacher-panel').classList.contains('active') && currentTeacherSection === 'live' && currentUser) { 
+            loadTeacherLive(); 
+            loadTeacherStats(); 
+        }
+    },3000);
+
+    console.log('RIMT Smart Attendance');
 </script>
 
-<div class="footer">POWERED BY CODEVERSE | RIMT UNIVERSITY </div>
+<div class="footer">POWERED BY CODEVERSE – RIMT UNIVERSITY </div>
 </body>
 </html>
+
 
