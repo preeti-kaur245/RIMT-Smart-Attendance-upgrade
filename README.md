@@ -154,10 +154,13 @@ Max Distance: 100 meters
 
 ---
 GITHUB - WEB APP : https://preeti-kaur245.github.io/RIMT-Smart-Attendance-upgrade/
-NETIFY - WEB APP : https://rimt-smart-attendance-dc3d26.netlify.app/
-FIREBASE - HOSTING : coming soon 
-APP MODEL - coming soon
 
+NETIFY - WEB APP : https://rimt-smart-attendance-dc3d26.netlify.app/
+
+FIREBASE - HOSTING : coming soon 
+
+APP MODEL - coming soon
+---
 ## 👨‍💻 Author
 
 Developed by: Manpreet kaur -  CodeVerse
